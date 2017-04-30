@@ -7,17 +7,30 @@ sheetify('tachyons')
 
 module.exports = Previewify
 
-function Previewify () {
-  if (!(this instanceof Previewify)) return new Previewify()
+function Previewify (opts) {
+  if (!(this instanceof Previewify)) return new Previewify(opts)
+  opts = opts || {}
+  this.name = opts.name || 'Previewify'
+  this.url = opts.url || '/'
+  this.components = []
   this.app = choo()
 }
 
 Previewify.prototype.component = function (name) {
   assert.equal(typeof name, 'string', 'previewify.component: name should be type string')
 
+  var comp = {
+    name: name,
+    components: []
+  }
+  this.components.push(comp)
   return new PreviewifyComponent(save, emit)
 
   function save (actName, actComponent) {
+    comp.components.push({
+      name: actName,
+      component: actComponent
+    })
   }
 
   function emit () {
@@ -33,47 +46,101 @@ Previewify.prototype.view = function () {
 }
 
 Previewify.prototype.start = function () {
-  this.app.route('/', this.componentView)
+  var self = this
+  this.app.use(this._emit)
+  this.components.forEach(function (comp, i) {
+    if (i === 0) self.app.route('/', self.componentView.bind(self))
+    self.app.route('#' + comp.name, self.componentView.bind(self))
+  })
   return this.app.start()
 }
 
 Previewify.prototype.mount = function (selector) {
-  this.app.route('/', this.componentView)
+  var self = this
+  this.app.use(this._emit)
+  this.components.forEach(function (comp, i) {
+    if (i === 0) self.app.route('/', self.componentView.bind(self))
+    self.app.route('#' + comp.name, self.componentView.bind(self))
+  })
   this.app.mount(selector)
 }
 
 Previewify.prototype.componentView = function (state, emit) {
-  console.log('called')
+  var self = this
+  var components = this.components.reduce(function (prev, curr) {
+    prev[curr.name] = curr
+    return prev
+  }, {})
+  components = components[window.location.hash.replace(/^#/, '')]
   return html`
     <body class="flex pa3 bg-black vh-100">
-      <aside class="flex flex-column justify-between content-center pa3 mw5 w-100 bg-black white">
-        <span class="ttl b f2 sans-serif">
-          Previewify
-        </span>
-       <p class="b">
-         Sponsored by
-         <a class="link white" href="https://datproject.org">
-           Dat
-         </a>
-        </p>
-      </aside>
-      <main class="bg-white pa5 mw8 w-100">
+      ${aside()}
+      <main class="bg-white ph5 pv3 mw8 w-100">
         <section>
-          This is the canvas
-        </section>
-        <section>
-          This is where we log output
+          ${preview(components)}
         </section>
       </main>
     </body>
   `
+
+  function preview (components) {
+    var els = components.components
+    return els.map(function (component) {
+      var name = component.name
+      var el = component.component
+      return html`
+        <article class="pb5">
+          <h2 class="f2 lh-title fw9 mb3 mt0 bb bw2 mb4">
+            ${name}
+          </h2>
+          ${el}
+        </article>
+      `
+    })
+  }
+
+  function aside () {
+    return html`
+      <aside class="flex flex-column justify-between content-center pa3 mw5 w-100 bg-black white">
+       <section>
+         <h1 class="ma0 ttl b f2 sans-serif pb5">
+           <a class="link white" href=${self.url}>
+            ${self.name}
+           </a>
+         </h1>
+         ${list()}
+       </section>
+       <section class="b">
+         <a class="link white" href="https://github.com/yoshuawuyts/previewify">
+           Previewify
+         </a>
+         <span>
+           by
+         </span>
+         <a class="link white" href="https://datproject.org">
+           Dat Project
+         </a>
+        </section>
+      </aside>
+    `
+
+    function list () {
+      return self.components.map(function (component) {
+        var name = component.name
+        return html`
+          <a class="f4 pt3 white link underline" href=${'#' + name}>
+            ${name}
+          </a>
+        `
+      })
+    }
+  }
 }
 
 Previewify.prototype._emit = function () {
   var len = arguments.length
   var arr = new Array(len)
   for (var i = 0; i < len; i++) arr.push(arguments[i])
-  console.log.apply(console, arguments)
 }
 
 function PreviewifyComponent (save, emit) {
@@ -84,4 +151,15 @@ function PreviewifyComponent (save, emit) {
 PreviewifyComponent.prototype.add = function (name, cb) {
   assert.equal(typeof name, 'string', 'component.add: name should be type string')
   assert.equal(typeof cb, 'function', 'component.add: cb should be type function')
+
+  var self = this
+  var component = cb(emit)
+  this.save(name, component)
+
+  function emit () {
+    var len = arguments.length
+    var arr = new Array(len)
+    for (var i = 0; i < len; i++) arr.push(arguments[i])
+    self.emit.apply(self, arr)
+  }
 }
