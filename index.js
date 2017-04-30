@@ -67,11 +67,17 @@ Previewify.prototype.mount = function (selector) {
 
 Previewify.prototype.componentView = function (state, emit) {
   var self = this
-  var components = this.components.reduce(function (prev, curr) {
-    prev[curr.name] = curr
-    return prev
-  }, {})
-  components = components[window.location.hash.replace(/^#/, '')]
+  var components = null
+  var location = window.location.hash.replace(/^#/, '')
+  if (location) {
+    components = this.components.reduce(function (prev, curr) {
+      prev[curr.name] = curr
+      return prev
+    }, {})
+    components = components[window.location.hash.replace(/^#/, '')]
+  } else {
+    components = this.components[0]
+  }
   return html`
     <body class="flex pa3 bg-black vh-100">
       ${aside()}
