@@ -1,0 +1,32 @@
+{
+  "name": "previewify",
+  "description": "Preview an application",
+  "repository": "yoshuawuyts/previewify",
+  "version": "1.0.0",
+  "browserify": {
+    "transform": [
+      "sheetify/transform"
+    ]
+  },
+  "scripts": {
+    "deps": "dependency-check . && dependency-check . --extra --no-dev",
+    "start": "bankai start example",
+    "test": "standard && npm run deps"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bankai": "^7.5.0",
+    "bel": "^4.6.0",
+    "dependency-check": "^2.8.0",
+    "sheetify": "^6.0.2",
+    "standard": "^10.0.2",
+    "tachyons": "^4.7.1",
+    "tape": "^4.6.3"
+  },
+  "keywords": [
+    "preview",
+    "components",
+    "browserify"
+  ],
+  "license": "MIT"
+}
