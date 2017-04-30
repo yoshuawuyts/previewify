@@ -2,7 +2,7 @@
   "name": "previewify",
   "description": "Preview an application",
   "repository": "yoshuawuyts/previewify",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "browserify": {
     "transform": [
       "sheetify/transform"
