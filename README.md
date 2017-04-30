@@ -2,14 +2,14 @@
 [![npm version][2]][3] [![build status][4]][5]
 [![downloads][8]][9] [![js-standard-style][10]][11]
 
-Preview an application.
-
 When building applications you usually create a set of stateful components. For
 example a button can be clicked, disabled, have different types of text on it
 and more. If you're not testing all states, it can be easy for regressions to
 pop back up. That's where preview tools become useful: they allow you to view
 all the states of your components and pages, so making sure all different
 states work as expected.
+
+![screenshot](./assets/screenshot.png)
 
 ## Usage
 ```js
@@ -38,8 +38,14 @@ p.mount('body')
 ```
 
 ## API
-### `p = previewify()`
-Create a new instance of Previewify
+### `p = previewify([opts])`
+Create a new instance of Previewify. Takes optional arguments:
+- `opts.name` (default: `'previewify'`) set the nav header name
+- `opts.url` (default: `'/'`) set the nav header url
+
+Exposes a few internal properties:
+- `p.app` instance of Choo
+- `p.components` array of registered components
 
 ### `DOMElement = p.start()`
 Start the instance, returns a DOM tree that can be mounted on the DOM.
@@ -59,6 +65,16 @@ Create a new page with a name. (To be implemented)
 
 ### `page.add(name, callback)`
 Add a new state of the page. (To be implemented)
+
+## FAQ
+### Why isn't this a command line tool?
+Separation of concerns, this is just a UI module - use
+[bankai](https://github.com/yoshuawuyts/bankai) or a similar compiler tool if
+you want to have a live reloading dev environment for your components.
+
+### Why did you build this?
+I thought the React storybook stuff was neat, and wanted something similar for
+regular DOM elements.
 
 ## See Also
 - https://storybooks.js.org
