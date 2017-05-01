@@ -168,4 +168,5 @@ PreviewifyComponent.prototype.add = function (name, cb) {
     for (var i = 0; i < len; i++) arr.push(arguments[i])
     self.emit.apply(self, arr)
   }
+  return this
 }
