@@ -108,7 +108,7 @@ Previewify.prototype.componentView = function (state, emit) {
   function aside () {
     return html`
       <aside class="flex flex-column justify-between content-center pa3 mw5 w-100 bg-black white">
-       <section>
+       <section class="flex flex-column">
          <h1 class="ma0 ttl b f2 sans-serif pb5">
            <a class="link white" href=${self.url}>
             ${self.name}
