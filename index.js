@@ -68,13 +68,13 @@ Previewify.prototype.mount = function (selector) {
 Previewify.prototype.componentView = function (state, emit) {
   var self = this
   var components = null
-  var location = window.location.hash.replace(/^#/, '')
+  var location = state.href.split('#')[1]
   if (location) {
     components = this.components.reduce(function (prev, curr) {
       prev[curr.name] = curr
       return prev
     }, {})
-    components = components[window.location.hash.replace(/^#/, '')]
+    components = components[location]
   } else {
     components = this.components[0]
   }
