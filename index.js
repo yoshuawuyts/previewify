@@ -62,7 +62,9 @@ Previewify.prototype.mount = function (selector) {
     if (i === 0) self.app.route('/', self.componentView.bind(self))
     self.app.route('#' + comp.name, self.componentView.bind(self))
   })
-  this.app.mount(selector)
+  if(typeof window !== 'undefined') {
+    this.app.mount(selector)
+  }
 }
 
 Previewify.prototype.componentView = function (state, emit) {
